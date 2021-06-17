@@ -43,11 +43,6 @@ void printPoly(std::vector<int> poly)
 	std::cout << std::endl;
 }
 
-static bool CustomCompare(const std::vector<int> a, const std::vector<int> b)
-{
-	return a.size() < b.size();
-}
-
 int main(int* argc, char* argv[])
 {
 	std::vector<std::vector<int>> polies =
@@ -59,7 +54,6 @@ int main(int* argc, char* argv[])
 	};
 
 	int poly_size = polies.size() * polies[0].size() - 1;
-	int operationsLeft = polies.size() - 1;
 	std::vector<int> res_poly(poly_size, 0);
 
 	for (int i = 0; i < polies.size(); i++)
@@ -145,125 +139,3 @@ int main(int* argc, char* argv[])
 	MPI_Finalize();
 	return 0;
 }
-
-
-/*#include <stdio.h>
-#include <stdlib.h>
-#include "mpi.h"
-#include <time.h>
-
-void Search(void* inputBuffer, void* outputBuffer, int* len, MPI_Datatype* datatype)
-{
-	int* input = (int*)inputBuffer;
-	int* output = (int*)outputBuffer;
-
-	if (input[0] == -1)
-	{
-		printf("search %d\n", input[0]);
-		output[0] = -1;
-	}
-	else
-		output[1] += 1;
-}
-
-int main(int argc, char* argv[])
-
-{
-	srand(time(0));
-	int size, rank;
-	int message = 0;
-	int counter = 0;
-	MPI_Status Status;
-
-	MPI_Init(&argc, &argv);
-
-	MPI_Op op;
-	MPI_Op_create((MPI_User_function*)Search, false, &op);
-
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	
-	while (true)
-	{
-		if (rank == 0)
-		{
-			MPI_Recv(&message, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &Status);
-			for (int i = 1; i < size; ++i)
-				MPI_Send(&message, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
-			if (message == -1)
-			{
-				printf("Counter recieved -1, final result: %d\n\n", counter);
-				break;
-			}
-
-			++counter;
-		}
-		else
-		{
-			message = rand() % 5 - 1;
-			MPI_Send(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-			MPI_Recv(&message, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &Status);
-			if (message == -1)
-				break;
-			
-		}
-	}
-	
-	
-	message = 0;
-	counter = 0;
-	int generated = 0;
-	int in[2] = { 0, 0};
-	int res[2] = { 0, 0};
-
-	while (true)
-	{
-
-		if (rank != 0)
-			in[0] = rand() % 5 - 1;
-
-		MPI_Reduce(in, res, 2, MPI_INT, op, 0, MPI_COMM_WORLD);
-
-		printf("%d\n", in[0]);
-		if (rank == 0 && res[0] == -1)
-		{
-			message = res[0];
-		}
-
-		MPI_Bcast(&message, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-		if (message == -1)
-			break;
-	}
-
-	if (rank == 0)
-		printf("Counter recieved -1, final result: %d\n\n", res[1]);
-
-
-
-	message = 0;
-	counter = 0;
-	generated = 0;
-
-	while (true)
-	{
-
-		if (message == -1)
-			break;
-
-		if (rank != 0)
-			generated = rand() % 5 - 1;
-		else
-			++counter;
-
-		MPI_Allreduce(&generated, &message, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-	}
-
-	if (rank == 0)
-		printf("Counter recieved -1, final result: %d\n\n", counter);
-		
-	MPI_Op_free(&op);
-	MPI_Finalize();
-
-	return 0;
-}*/
